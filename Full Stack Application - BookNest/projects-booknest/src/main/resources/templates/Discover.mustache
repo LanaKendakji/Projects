@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title> BookNest - Discover Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+  <link rel="stylesheet" href="/Css/Discover.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+
+  <style>
+    .ui.menu {
+      background-color: #5a3e36;
+      color: white;
+      font-size: 1.3rem;
+      border-radius: 0;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    .ui.buttons {
+      position: absolute;
+      margin-top: -14px;
+    }
+    /*Navigation bar Styling*/
+
+    .nav-logo {
+        height: 12.80vh;
+        margin-right: 20px;
+        margin-left: 60px;
+        flex-shrink: 0;
+    }
+
+    /* Add to your navigation styling */
+    .ui.menu {
+        position: relative;
+        z-index: 100; /* Higher than genre bar */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .menu-items {
+        display: flex;
+        gap: 20px;
+    }
+
+    .right.menu {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-grow: 1;
+        justify-content: flex-end;
+    }
+
+    /*TABLET AND MOBILE VIEW*/
+    @media (max-width: 900px) {
+        .menu-items,
+        .right.menu {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .ui.menu {
+            flex-direction: column;
+            height: auto;
+            align-items: flex-start;
+        }
+
+        .nav-logo {
+            margin-left: 20px;
+            height: 10vh;
+        }
+    }
+
+
+  </style>
+</head>
+
+<body>
+
+<!-- NAV BAR -->
+<div class="ui menu">
+    <img src="/images/logo-beige.png" alt="BookNest Logo" class="nav-logo">
+
+    <div class="menu-items">
+        <a href="/home/{{email}}" class="item">Home</a>
+        <a href="/Discover/{{email}}" class="item">Discover</a>
+        <a href="/nobel/{{email}}" class="item">Nobel Prize</a>
+        <a href="/profile/{{email}}" class="item">Profile</a>
+
+    </div>
+
+    <div class="right menu">
+        <div class="item">
+            <button  class="ui small button" id="signout-btn"> <a href="/joinbooknest"> Sign out </a> </button>
+        </div>
+    </div>
+</div>
+
+
+<!-- GENRE BAR -->
+<div class="ui genre-bar">
+    <div class="ui stackable four column grid container">
+        <div class="column">
+            <a href="/Discover/{{email}}/romance" class="ui fluid button romance">Romance</a>
+        </div>
+        <div class="column">
+            <a href="/Discover/{{email}}/horror" class="ui fluid button horror">Horror</a>
+        </div>
+        <div class="column">
+            <a href="/Discover/{{email}}/fantasy" class="ui fluid button fantasy">Fantasy</a>
+        </div>
+        <div class="column">
+            <a href="/Discover/{{email}}/mystery" class="ui fluid button mystery">Mystery</a>
+        </div>
+        <div class="column">
+            <a href="/Discover/{{email}}/sci-fi" class="ui fluid button scifi">Sci-Fi</a>
+        </div>
+        <div class="column">
+            <a href="/Discover/{{email}}/thriller" class="ui fluid button thriller">Thriller</a>
+        </div>
+        <div class="column">
+            <a href="/Discover/{{email}}/nonfiction" class="ui fluid button nonfiction">Non-Fiction</a>
+        </div>
+        <div class="column">
+            <a href="/Discover/{{email}}/biography" class="ui fluid button biography">Biography</a>
+        </div>
+    </div>
+</div>
+
+<!-- BOOK DISPLAY-->
+
+<div class="book-display-container">
+{{#displayedBooks}}
+    <div class="column book-card">
+        <div class="ui fluid card">
+            <div class="image">
+                <img src="{{thumbnailUrl}}" alt="Book Cover"
+                     onerror="this.onerror=null;
+                             this.src='https://covers.openlibrary.org/b/isbn/{{isbn}}-M.jpg';">
+            </div>
+
+            <!-- Hover Button Icons with Titles -->
+            <div class="hover-buttons">
+                <button class="ui icon button" onclick="currentlyReading({{{id}}})" title="Currently Reading">
+                    <i class="book icon"></i>
+                </button>
+                <button class="ui icon button" onclick="bookToRead({{id}})" title="Want to Read">
+                    <i class="bookmark outline icon"></i>
+                </button>
+                <button class="ui icon button" onclick="alreadyRead({{{id}}})" title="Already Read">
+                    <i class="bookmark icon"></i>
+                </button>
+            </div>
+
+            <div class="content">
+                <div class="header">{{title}}</div>
+            </div>
+        </div>
+    </div>
+{{/displayedBooks}}
+</div>
+
+
+<!--login -->
+<div class="ui modal" id="login-modal">
+    <div class="header">Login</div>
+    <div class="content">
+        <form class="ui form">
+            <div class="field">
+                <label>Email</label>
+                <input type="email" placeholder="Enter your email">
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <input type="password" placeholder="Enter your password">
+            </div>
+            <button class="ui button primary" type="submit" style="background-color: #d1bfa7 !important; color: #3a2e1f !important;">Login</button>
+        </form>
+    </div>
+</div>
+
+<!-- signup -->
+<div class="ui modal" id="signup-modal">
+    <div class="header">Signup</div>
+    <div class="content">
+        <form class="ui form">
+            <div class="field">
+                <label>Full Name</label>
+                <input type="text" placeholder="Enter your name">
+            </div>
+            <div class="field">
+                <label>Email</label>
+                <input type="email" placeholder="Enter your email">
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <input type="password" placeholder="Create a password">
+            </div>
+            <button class="ui small button" id="signup-submit" style="background-color: #d1bfa7 !important; color: #3a2e1f !important;">Signup</button>
+        </form>
+    </div>
+</div>
+
+<!--currently reading -->
+<div class="ui modal" id="currently-reading-modal">
+    <div class="header">Add to Currently Reading</div>
+    <div class="content">
+        <form id="currently-reading-form" class="ui form" method="post" >
+            <div class="field">
+                <label for="startDate">Start Date</label>
+                <input type="date" name="startDate" placeholder="Enter your reading start date">
+            </div>
+            <div class="field">
+                <label for="pagesRead">Pages Read</label>
+                <input type="number" name="pagesRead" placeholder="Enter how many pages you've read">
+            </div>
+            <button class="ui button primary" type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+
+<!--already read -->
+<div class="ui modal" id="already-read-modal">
+    <div class="header">Add to Read Books </div>
+    <div class="content">
+        <form id="already-read-form" class="ui form" method="post" >
+            <div class="field">
+                <label for="startDate">Start Date</label>
+                <input type="date" name="startDate">
+            </div>
+            <div class="field">
+                <label for="endDate">End Date</label>
+                <input type="date" name="endDate">
+            </div>
+            <div class="field">
+                <label for="review">Review the Book</label>
+                <textarea name="review" placeholder="A quiet space for your reflections..." rows="4" cols="50"> </textarea>
+            </div>
+            <div class="field">
+                <label for="rating">Rate the Book</label>
+                <div class="ui form">
+                    <div class="inline fields">
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="rating" value="1">
+                                <label>1</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="rating" value="2">
+                                <label>2</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="rating" value="3">
+                                <label>3</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="rating" value="4">
+                                <label>4</label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="radio" name="rating" value="5">
+                                <label>5</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <button class="ui button primary" type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+
+<!-- footer -->
+<footer class="ui inverted  footer sixteen wide column">
+    <div class="ui container" style="padding-top: 50px">
+        <div class="ui stackable divided equal height stackable grid">
+            <div class="four wide column">
+                <h4 class="ui inverted header">Connect With Us</h4>
+                <div class="ui  inverted link list">
+                    <a href="#" class="item"><i class="facebook icon"></i> Facebook</a>
+                    <a href="#" class="item"><i class="twitter icon"></i> Twitter</a>
+                    <a href="#" class="item"><i class="instagram icon"></i> Instagram</a>
+                </div>
+            </div>
+            <div class="four wide column">
+                <h4 class="ui inverted header">Contact Us</h4>
+                <p>Email: booknest@gmail.com</p>
+                <p>Phone: +123 456 7890</p>
+            </div>
+
+
+            <div class="eight wide column">
+                <h4 class="ui inverted header">Newsletter</h4>
+                <p>Subscribe for updates on new book releases.</p>
+
+                <form action="/subscribe/{{email}}" method="post" class="ui action input" style="width: 100%;">
+                    <input type="email" name="newsletteremail" placeholder="Your email..." required>
+                    <button class="ui button" type="submit">Subscribe</button>
+                </form>
+            </div>
+
+            <!-- Modal for Subscription Feedback -->
+            <div class="ui modal" id="subscription-modal">
+                <div class="header" id="modal-header">Subscription</div>
+                <div class="content">
+                    <p id="modal-message">Thanks for subscribing!</p>
+                </div>
+                <div class="actions">
+                    <div class="ui approve button">OK</div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="ui center aligned container" style="padding-top: 20px;">
+            <p>&#xa9; 2025 BookNest. All rights reserved.</p>
+        </div>
+    </div>
+
+
+
+
+</footer>
+
+
+<!-- javascript -->
+<script>
+    // we place it outside because the onclick attribute cant reach it otherwise as it wont be global
+    function bookToRead(id) {
+        // connecting the post method to the button
+        fetch(`/{{email}}/${id}/ToRead`, { // Makes a HTTP request to the server for this path when the button is clicked 
+            method: 'POST' // States that its a POST method to the server
+        })}
+
+    function currentlyReading(id){
+        // creating a dynamic url, we need this because we cant define the url directly in the form as the id and email will constantly change
+        const formAction = `/{{email}}/${id}/CurrentlyReading`;
+        // setting the forms action attribute to the dynamic url
+        $("#currently-reading-form").attr("action", formAction);
+        $("#currently-reading-modal").modal("show");
+    }
+
+    function alreadyRead(id){
+        const formAction = `/{{email}}/${id}/AlreadyRead`;
+        $("#already-read-form").attr("action", formAction);
+        $("#already-read-modal").modal("show");
+    }
+
+
+    $(document).ready(function() {
+
+        $("#mobile-menu-toggle").click(function() {
+            $(".menu-items").toggleClass("active");
+        });
+
+        const subscribed = '{{#subscribed}}true{{/subscribed}}';
+        const subscribeFailed = '{{#subscribeFailed}}true{{/subscribeFailed}}';
+
+        if (subscribed === 'true') {
+            $('#modal-header').text("You're Subscribed!");
+            $('#modal-message').text("Thanks for subscribing to BookNest 🎉");
+            $('#subscription-modal').modal('show');
+        }
+
+        if (subscribeFailed === 'true') {
+            $('#modal-header').text("Already Subscribed");
+            $('#modal-message').text("You're already on our list 😊 No need to subscribe again.");
+            $('#subscription-modal').modal('show');
+        }
+
+
+    });
+
+
+</script>
+
+
+</body>
+
+
+</html>
